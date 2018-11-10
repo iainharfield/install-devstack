@@ -1,0 +1,9 @@
+- name: Install devstack
+  hosts: OpenStack
+  vars_files:
+  - customise.yml
+  remote_user: "{{ username }}"
+
+
+  roles:
+    - role: install
