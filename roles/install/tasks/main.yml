@@ -1,0 +1,64 @@
+# usage:   ansible-playbook -v install.yml 
+# Target OS : Ubuntu 16.04
+# clone devstack
+# download a local.conf
+# copy local.sh to devstack (stack.sh failed the first time this ran)
+
+---
+  - name: Clone devstack
+    git: repo=https://git.openstack.org/openstack-dev/devstack
+         clone=yes
+         dest=~/devstack
+
+  - name: Clone devstack config file for demo
+    git: repo=https://github.com/iainharfield/openstack-config.git
+         clone=yes
+         dest=~/devstack-config
+
+  - name: Copy demoConfig.sh into devstack folder
+    copy:
+      src: ~/devstack-config/demoConfig.sh
+      dest: ~/ 
+      force: yes
+      remote_src: yes
+
+  - name: Add excution permissions to demoConfig.sh
+    file: dest=~/demoConfig.sh mode=a+x
+
+  - name: Create directory if they don't exist
+    file:
+      path: "{{ item }}"
+      state: directory
+    with_items:
+    - ./myImages
+    - ./myKeys
+
+  - name: Copying SB ubuntu image to devstack server
+    copy:
+      src: ./myImages/ubuntu-16.04-sb10.3-4.img
+      dest: ~/myImages/ubuntu-16.04-sb10.3-4.img
+      force: no
+
+  - name: Copying keys to devstack server
+    copy:
+      src: ./myKeys/id_rsa.pub
+      dest: ~/myKeys/id_rsa.pub
+      force: yes
+
+  - name: Copying keys to devstack server
+    copy:
+      src: ./myKeys/id_rsa
+      dest: ~/id_rsa
+      force: yes
+      mode: 0600
+
+#  - name: devstack local.conf
+#    template: src=../../../templates/local.conf.j2
+#              dest=~/devstack/local.conf
+
+
+#  - name: devstack local.conf
+#    template: src=../../../templates/local.sh.j2
+#              dest=~/devstack/local.sh
+
+
